@@ -1169,17 +1169,42 @@ client.on(Events.MessageCreate, async (message) => {
   }
 });
 
-// Commande pour obtenir des infos sur le serveur (!server ou !serveur)
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
-  
+
   const content = message.content.toLowerCase();
-  
+
+  // --- Réponse automatique dans les salons de pub ---
+  if (pubChannels.includes(message.channelId)) {
+    try {
+      const pubEmbed = new EmbedBuilder()
+        .setColor('#FFC83D')
+        .setTitle('🍍 Pineapple - Serveur Pub')
+        .setDescription(`
+Merci pour ta publication <@${message.author.id}>!
+
+**Rejoins notre communauté de promotion Discord:**
+• Publie ton serveur dans les salons appropriés
+• Trouve des partenaires pour ton projet
+• Développe ta visibilité rapidement
+
+📌 Consulte nos règles: <${rulesChannelUrl}>
+🔗 Invite tes amis: ${inviteLink}
+        `)
+        .setFooter({ text: 'Merci de partager notre serveur pour plus de visibilité!' });
+      
+      await message.reply({ embeds: [pubEmbed], allowedMentions: { repliedUser: false } });
+    } catch (error) {
+      console.error('Erreur lors de la réponse dans un salon de pub:', error);
+    }
+    return;
+  }
+
+  // --- Commande !server, !serveur ou !pineapple ---
   if (content === '!server' || content === '!serveur' || content === '!pineapple') {
     try {
       const guild = message.guild;
       const owner = await guild.fetchOwner();
-      
       const serverEmbed = new EmbedBuilder()
         .setColor('#FFC83D')
         .setTitle(`📊 Informations sur ${guild.name}`)
@@ -1192,88 +1217,68 @@ client.on(Events.MessageCreate, async (message) => {
         )
         .setFooter({ text: '🍍 Pineapple - Serveur Pub 🍍' })
         .setTimestamp();
-        
+
       await message.reply({ embeds: [serverEmbed] });
     } catch (error) {
-      console.error('Erreur lors de l\'affichage des infos du serveur:', error);
+      console.error('Erreur lors de l\'affichage des infos serveur:', error);
     }
+    return;
   }
-});
 
-// Commande d'aide (!help ou !aide)
-client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot) return;
-  
-  const content = message.content.toLowerCase();
-  
+  // --- Commande !help ou !aide ---
   if (content === '!help' || content === '!aide') {
     try {
       const helpEmbed = new EmbedBuilder()
         .setColor('#FFC83D')
         .setTitle('🍍 Commandes Pineapple Bot 🍍')
         .setDescription(`
-        Voici les commandes disponibles sur notre serveur:
-        
-        **Commandes textuelles:**
-        • **!server** ou **!serveur** - Affiche les informations sur le serveur
-        • **!help** ou **!aide** - Affiche cette liste de commandes
-        • **!invite** - Génère un lien d'invitation pour le serveur
-        
-        **Commandes slash:**
-        • **/purge** - Supprime un nombre spécifique de messages
-        • **/info** - Affiche des informations détaillées sur un membre
-        • **/ping** - Affiche la latence du bot
-        • **/ban** - Banni un membre du serveur
-        • **/kick** - Expulse un membre du serveur
-        • **/timeout** - Met un membre en timeout
-        • **/stats** - Affiche les statistiques du serveur
-        • **/rolelog** - Active ou désactive le log des changements de rôles
-        • **/giveaway** - Crée un giveaway avec des prix
-        • **/setup-ticket** - Configure le système de tickets
-        • **/message** - Envoie un message en tant que bot
-        • **/setup-counter** - Configure un compteur de membres vocal
-        • **/announce** - Fait une annonce officielle
-        • **/poll** - Crée un sondage
-        • **/embed** - Crée un embed personnalisé
-        • **/usercount** - Affiche les statistiques de croissance
-        • **/reminder** - Crée un rappel personnel
-        • **/avatar** - Affiche l'avatar d'un utilisateur
-        • **/servericon** - Affiche l'icône du serveur
-        • **/servbanner** - Affiche la bannière du serveur
-        
-        N'hésite pas à consulter nos règles et notre guide pour plus d'informations!
+Voici les commandes disponibles sur notre serveur:
+
+**Commandes textuelles:**
+• **!server** ou **!serveur** - Infos sur le serveur
+• **!help** ou **!aide** - Liste des commandes
+• **!invite** - Lien d'invitation du serveur
+
+**Commandes slash (/):**
+• /purge, /info, /ping, /ban, /kick, /timeout
+• /stats, /rolelog, /giveaway, /setup-ticket
+• /message, /setup-counter, /announce, /poll
+• /embed, /usercount, /reminder, /avatar
+• /servericon, /servbanner
+
+N'hésite pas à consulter nos règles et notre guide pour plus d'infos !
         `)
-        .setFooter({ text: '🍍 Pineapple - Serveur Pub 🍍' });
-        
+        .setFooter({ text: '🍍 Pineapple - Serveur Pub 🍍' })
+        .setTimestamp();
+
       await message.reply({ embeds: [helpEmbed] });
     } catch (error) {
       console.error('Erreur lors de l\'affichage de l\'aide:', error);
     }
+    return;
   }
-});
 
-// Commande pour obtenir le lien d'invitation (!invite)
-client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot) return;
-  
-  if (message.content.toLowerCase() === '!invite') {
+  // --- Commande !invite ---
+  if (content === '!invite') {
     try {
       const inviteEmbed = new EmbedBuilder()
         .setColor('#FFC83D')
-        .setTitle('🔗 Invite tes amis à rejoindre notre serveur!')
+        .setTitle('🔗 Invite tes amis à rejoindre notre serveur !')
         .setDescription(`
-        Partage ce lien avec tes amis pour qu'ils puissent nous rejoindre:
-        
-        **${inviteLink}**
-        
-        Merci de contribuer à la croissance de notre communauté!
+Partage ce lien avec tes amis pour qu'ils puissent nous rejoindre :
+
+**${inviteLink}**
+
+Merci de contribuer à la croissance de notre communauté !
         `)
-        .setFooter({ text: '🍍 Pineapple - Serveur Pub 🍍' });
-        
+        .setFooter({ text: '🍍 Pineapple - Serveur Pub 🍍' })
+        .setTimestamp();
+
       await message.reply({ embeds: [inviteEmbed] });
     } catch (error) {
       console.error('Erreur lors de l\'affichage du lien d\'invitation:', error);
     }
+    return;
   }
 });
 
