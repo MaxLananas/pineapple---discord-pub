@@ -20,24 +20,36 @@ const client = new Client({
   ]
 });
 
-// Variables d'environnement de Replit
+// Ajoutez express pour le serveur web
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
 
-// Événement quand le bot est prêt
-client.once(Events.ClientReady, readyClient => {
-  console.log(`Connecté en tant que ${readyClient.user.tag}`);
+// Ajouter un gestionnaire d'événements ready
+client.once('ready', () => {
+  console.log(`Bot connecté en tant que ${client.user.tag}!`);
+  client.user.setActivity('en ligne 24/7', { type: ActivityType.Playing });
 });
 
-// Gestion des erreurs
+// Gérer les erreurs
 client.on('error', error => {
-  console.error('Erreur Discord.js:', error);
+  console.error('Erreur Discord:', error);
 });
 
-// Connexion avec gestion d'erreur
-console.log("Tentative de connexion...");
-client.login(token).catch(err => {
-  console.error("Erreur de connexion:", err.message);
+// Se connecter à Discord
+client.login(token).catch(error => {
+  console.error('Erreur de connexion:', error);
+});
+
+// Serveur web pour le ping
+app.get('/', (req, res) => {
+  res.send('Bot is running!');
+});
+
+app.listen(port, () => {
+  console.log(`Serveur web en écoute sur le port ${port}`);
 });
 
 // Salon où envoyer les messages de bienvenue
