@@ -1,0 +1,14 @@
+{
+    "name": "pineapple",
+    "version": "1.0.0",
+    "description": "Bot Discord",
+    "main": "index.js",
+    "dependencies": {
+        "discord.js": "^14.14.1"
+    },
+    "scripts": {
+        "start": "node index.js"
+    },
+    "author": "",
+    "license": "ISC"
+}
