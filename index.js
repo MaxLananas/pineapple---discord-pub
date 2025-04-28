@@ -1135,40 +1135,6 @@ client.on('guildMemberAdd', async (member) => {
   }
 });
 
-// Répondre aux messages dans les salons de pub (version simplifiée)
-client.on(Events.MessageCreate, async (message) => {
-  // Ignorer les messages du bot
-  if (message.author.bot) return;
-  
-  // Vérifier si le message est dans un des salons de pub
-  if (pubChannels.includes(message.channelId)) {
-    try {
-      // Message simple avec pub du serveur
-      const pubEmbed = new EmbedBuilder()
-        .setColor('#FFC83D')
-        .setTitle('🍍 Pineapple - Serveur Pub')
-        .setDescription(`
-        Merci pour ta publication <@${message.author.id}>!
-        
-        **Rejoins notre communauté de promotion Discord:**
-        • Publie ton serveur dans les salons appropriés
-        • Trouve des partenaires pour ton projet
-        • Développe ta visibilité rapidement
-        
-        📌 Consulte nos règles: <${rulesChannelUrl}>
-        🔗 Invite tes amis: ${inviteLink}
-        `)
-        .setFooter({ text: 'Merci de partager notre serveur pour plus de visibilité!' });
-      
-      // Répondre au message
-      await message.reply({ embeds: [pubEmbed], allowedMentions: { repliedUser: false } });
-      
-    } catch (error) {
-      console.error('Erreur lors de la réponse à un message:', error);
-    }
-  }
-});
-
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
