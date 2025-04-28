@@ -3,7 +3,10 @@ const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, Events, REST, Rou
 const fs = require('fs');
 const path = require('path');
 const { createWriteStream } = require('fs');
-const axios = require('axios'); // Vous devrez installer axios: npm install axios
+const axios = require('axios');
+
+// Débogage - Vérifiez si le token est disponible
+console.log("DISCORD_TOKEN disponible:", process.env.DISCORD_TOKEN ? "Oui" : "Non");
 
 // Création d'un client Discord
 const client = new Client({
@@ -17,12 +20,25 @@ const client = new Client({
   ]
 });
 
-// La partie dotenv n'est PAS nécessaire sur Replit
+// Variables d'environnement de Replit
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.CLIENT_ID;
 
-// Utilisez ces variables dans votre code
-client.login(token);
+// Événement quand le bot est prêt
+client.once(Events.ClientReady, readyClient => {
+  console.log(`Connecté en tant que ${readyClient.user.tag}`);
+});
+
+// Gestion des erreurs
+client.on('error', error => {
+  console.error('Erreur Discord.js:', error);
+});
+
+// Connexion avec gestion d'erreur
+console.log("Tentative de connexion...");
+client.login(token).catch(err => {
+  console.error("Erreur de connexion:", err.message);
+});
 
 // Salon où envoyer les messages de bienvenue
 const welcomeChannelId = '1366151996654096524';
