@@ -1,0 +1,27 @@
+name: Discord Bot Runner
+
+on:
+  schedule:
+    - cron: '*/50 * * * *'  # Exécute toutes les 50 minutes
+  workflow_dispatch:  # Permet de déclencher manuellement
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Run bot
+        run: node index.js
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
