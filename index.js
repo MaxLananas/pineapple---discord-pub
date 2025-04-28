@@ -18,7 +18,7 @@ const client = new Client({
 });
 
 // Configuration du token
-const token = 'MTM2MDc0NDEzMTg0NDExMjQ1NA.GiG819.WxqhSsOowM72bFcefZ5jRSdwVpm9rmro8Pqdo8';
+const token = 'MTM2MDc0NDEzMTg0NDExMjQ1NA.GOpGR6.JmrGtXJbaJfAqQCDrlHDbSQzgdE96TL1-6K-TY';
 const clientId = '1360744131844112454'; // ID du bot
 
 // Salon où envoyer les messages de bienvenue
