@@ -18,8 +18,8 @@ const client = new Client({
 });
 
 // Configuration du token
-const token = 'MTM2MDc0NDEzMTg0NDExMjQ1NA.GOpGR6.JmrGtXJbaJfAqQCDrlHDbSQzgdE96TL1-6K-TY';
-const clientId = '1360744131844112454'; // ID du bot
+// Utiliser le token depuis les variables d'environnement
+client.login(process.env.DISCORD_TOKEN);
 
 // Salon où envoyer les messages de bienvenue
 const welcomeChannelId = '1366151996654096524';
