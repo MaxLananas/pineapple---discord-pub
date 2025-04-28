@@ -17,9 +17,12 @@ const client = new Client({
   ]
 });
 
-// Configuration du token
-// Utiliser le token depuis les variables d'environnement
-client.login(process.env.DISCORD_TOKEN);
+// La partie dotenv n'est PAS nécessaire sur Replit
+const token = process.env.DISCORD_TOKEN;
+const clientId = process.env.CLIENT_ID;
+
+// Utilisez ces variables dans votre code
+client.login(token);
 
 // Salon où envoyer les messages de bienvenue
 const welcomeChannelId = '1366151996654096524';
