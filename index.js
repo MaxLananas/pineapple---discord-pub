@@ -1224,17 +1224,6 @@ client.on('guildMemberAdd', async (member) => {
   }
 });
 
-client.on(Events.MessageCreate, async (message) => {
-  if (message.author.bot) return;
-
-  const content = message.content.toLowerCase();
-
-    } catch (error) {
-      console.error('Erreur lors de la réponse dans un salon de pub:', error);
-    }
-    return;
-  }
-
   // --- Commande !server, !serveur ou !pineapple ---
   if (content === '!server' || content === '!serveur' || content === '!pineapple') {
     try {
