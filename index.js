@@ -1135,75 +1135,59 @@ function checkReminders() {
   });
 }
 
-// Événement quand un membre rejoint le serveur
+// Événement : un membre rejoint le serveur
 client.on('guildMemberAdd', async (member) => {
   try {
     // Attribution du rôle automatique
     try {
       await member.roles.add(autoRoleId);
       console.log(`Rôle attribué à ${member.user.tag}`);
-    } catch (roleError) {
-      console.error('Erreur lors de l\'attribution du rôle:', roleError);
+    } catch (error) {
+      console.error('Erreur lors de l\'attribution du rôle:', error);
     }
 
     // Message de bienvenue dans le salon
     const welcomeChannel = client.channels.cache.get(welcomeChannelId);
-    
     if (!welcomeChannel) return;
 
-    // Création du message de bienvenue amélioré avec embed et GIF
     const welcomeEmbed = new EmbedBuilder()
       .setColor('#FFC83D')
-      .setTitle(`✨ Bienvenue ${member.user.username} sur notre serveur! ✨`)
+      .setTitle(`✨ Bienvenue ${member.user.username} sur notre serveur ! ✨`)
       .setDescription(`
-      🍍 **Nous sommes ravis de t'accueillir parmi nous!** 🍍
-      
-      Notre communauté grandit grâce à des membres comme toi!
-      
-      📜 **Consulte nos règles:**
-      <${rulesChannelUrl}>
-      
-      📢 **Reste informé avec nos annonces:**
-      <${announcementChannelUrl}>
-      
-      📚 **Guide pour bien démarrer:**
-      <${guideChannelUrl}>
-      
-      N'hésite pas à te présenter et à interagir avec les autres membres!
+🍍 **Nous sommes ravis de t'accueillir parmi nous !**
+
+📜 **Consulte nos règles :** <${rulesChannelUrl}>
+📢 **Reste informé avec nos annonces :** <${announcementChannelUrl}>
+📚 **Guide pour bien démarrer :** <${guideChannelUrl}>
+
+N'hésite pas à te présenter et à interagir avec les autres membres !
       `)
-      .setImage('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2QxMXBhZXg5bmtjMG1xdm1lb2V0amtyNzQ3cm5hMmI0cGg5bTgxbyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xUPGGDNsLvqsBOhuU0/giphy.gif')
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+      .setImage('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2QxMXBhZXg5bmtjMG1xdm1lb2V0amtyNzQ3cm5hMmI0cGg5bTgxbyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xUPGGDNsLvqsBOhuU0/giphy.gif')
       .setFooter({ text: '🍍 Pineapple - Serveur Pub 🍍' })
       .setTimestamp();
 
-    // Envoi du message de bienvenue dans le salon
-    await welcomeChannel.send({ 
+    await welcomeChannel.send({
       content: `👋 Hey <@${member.id}> ! Bienvenue parmi nous !`,
-      embeds: [welcomeEmbed] 
+      embeds: [welcomeEmbed]
     });
 
-    // Envoi du message promotionnel en MP
+    // Envoi d'un message privé de bienvenue
     const dmEmbed = new EmbedBuilder()
       .setColor('#FFC83D')
       .setTitle('🌟 Bienvenue sur Pineapple - Serveur Pub! 🌟')
       .setDescription(`
-      Salut <@${member.id}>, merci d'avoir rejoint notre communauté!
-      
-      **🍍 Notre serveur offre:**
-      • Promotion de ton serveur Discord
-      • Opportunités de partenariats
-      • Communauté active et accueillante
-      • Événements réguliers et concours
-      
-      **❓ Comment promouvoir ton contenu:**
-      1. Respecte nos règles de publication
-      2. Utilise les salons appropriés
-      3. Interagis avec les autres membres
-      
-      **🔗 Invite tes amis:**
-      ${inviteLink}
-      
-      Nous te souhaitons une excellente expérience sur notre serveur!
+Salut <@${member.id}> ! Merci d'avoir rejoint notre communauté !
+
+🍍 **Notre serveur propose :**
+• Promotion de ton serveur Discord
+• Opportunités de partenariats
+• Communauté active et chaleureuse
+• Événements et concours réguliers
+
+🔗 **Invite tes amis ici :** ${inviteLink}
+
+Profite bien de ton expérience parmi nous !
       `)
       .setImage('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2QxMXBhZXg5bmtjMG1xdm1lb2V0amtyNzQ3cm5hMmI0cGg5bTgxbyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/xUPGGDNsLvqsBOhuU0/giphy.gif')
       .setFooter({ text: '🍍 Pineapple - Serveur Pub 🍍' });
@@ -1211,100 +1195,110 @@ client.on('guildMemberAdd', async (member) => {
     try {
       await member.send({ embeds: [dmEmbed] });
       console.log(`MP envoyé à ${member.user.tag}`);
-    } catch (dmError) {
-      console.error('Erreur lors de l\'envoi du MP:', dmError);
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi du MP:', error);
     }
-    
-    // Mettre à jour le statut du bot et le compteur de membres
+
     updateBotStatus();
     updateMemberCountChannel();
-    
   } catch (error) {
-    console.error('Erreur générale:', error);
+    console.error('Erreur générale dans guildMemberAdd:', error);
   }
 });
 
+// Stockage pour les derniers messages de pub envoyés par le bot
+const lastPubBotMessages = new Map();
+
+// --- GESTION DES PUBLICATIONS DANS LES SALONS DE PUB ---
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
-
+  
   const content = message.content.toLowerCase();
-
-  // --- Réponse automatique dans les salons de pub ---
+  
   if (pubChannels.includes(message.channelId)) {
     try {
       const pubEmbed = new EmbedBuilder()
         .setColor('#FFC83D')
         .setTitle('🍍 Pineapple - Serveur Pub')
         .setDescription(`
-Merci pour ta publication <@${message.author.id}>!
+Merci pour ta publication <@${message.author.id}> !
 
-**Rejoins notre communauté de promotion Discord:**
+🔗 **Rejoins notre communauté de promotion :**
 • Publie ton serveur dans les salons appropriés
-• Trouve des partenaires pour ton projet
-• Développe ta visibilité rapidement
+• Trouve des partenaires
+• Développe ta visibilité
 
-📌 Consulte nos règles: <${rulesChannelUrl}>
-🔗 Invite tes amis: ${inviteLink}
+📜 **Consulte nos règles :** <${rulesChannelUrl}>
+🚀 **Invite tes amis :** ${inviteLink}
         `)
-        .setFooter({ text: 'Merci de partager notre serveur pour plus de visibilité!' });
+        .setFooter({ text: 'Merci de soutenir notre serveur !' });
+
+      // Supprimer le dernier message de pub du bot si existant
+      const lastBotMsgId = lastPubBotMessages.get(message.channelId);
+      if (lastBotMsgId) {
+        try {
+          const oldBotMessage = await message.channel.messages.fetch(lastBotMsgId);
+          if (oldBotMessage && oldBotMessage.deletable) {
+            await oldBotMessage.delete();
+          }
+        } catch (err) {
+          console.warn('Impossible de supprimer l’ancien message du bot:', err.message);
+        }
+      }
+
+      // Envoie du nouveau message du bot
+      const botMessage = await message.reply({ embeds: [pubEmbed], allowedMentions: { repliedUser: false } });
       
-      // Supprimer le dernier message du bot dans ce salon, s’il existe
-const lastMessageId = lastPubBotMessages.get(message.channelId);
-if (lastMessageId) {
-  try {
-    const oldMessage = await message.channel.messages.fetch(lastMessageId);
-    if (oldMessage && oldMessage.deletable) {
-      await oldMessage.delete();
+      // Sauvegarde de l'ID du message bot pour suppression future
+      lastPubBotMessages.set(message.channelId, botMessage.id);
+
+      // Associer l'ID du message de l'utilisateur au message du bot pour suppression liée
+      const userMessageId = message.id;
+      message.client.once(Events.MessageDelete, async (deletedMessage) => {
+        if (deletedMessage.id === userMessageId) {
+          try {
+            const relatedBotMessage = await message.channel.messages.fetch(botMessage.id);
+            if (relatedBotMessage && relatedBotMessage.deletable) {
+              await relatedBotMessage.delete();
+            }
+          } catch (err) {
+            console.warn('Erreur lors de la suppression du message du bot lié à un message supprimé:', err.message);
+          }
+        }
+      });
+
+      // Gérer les statistiques de publication
+      const userId = message.author.id;
+      const pubCount = (pubStats.get(userId) || 0) + 1;
+      pubStats.set(userId, pubCount);
+      savePubStats();
+
+      // Récompense
+      const rewardThreshold = 50; 
+      const rewardRoleId = '1366569803275571210'; // ID du rôle spécial
+      if (pubCount === rewardThreshold) {
+        try {
+          const member = await message.guild.members.fetch(userId);
+          await member.roles.add(rewardRoleId);
+          await message.channel.send({
+            content: `🎉 Bravo <@${userId}> ! Tu as atteint ${rewardThreshold} publications et gagné un rôle spécial !`
+          });
+        } catch (error) {
+          console.error('Erreur lors de l\'attribution du rôle de récompense:', error);
+        }
+      }
+
+    } catch (error) {
+      console.error('Erreur lors de la gestion de la publication de pub:', error);
     }
-  } catch (err) {
-    console.warn('Impossible de supprimer l’ancien message de pub :', err.message);
   }
-}
+});
 
-// Incrémenter les stats de pub
-const userId = message.author.id;
-const currentCount = pubStats.get(userId) || 0;
-const newCount = currentCount + 1;
-pubStats.set(userId, newCount);
-savePubStats();
-
-
-// Vérifier si l'utilisateur atteint un palier pour récompense
-const rewardThreshold = 50; // Exemple : 10 pubs pour avoir un rôle
-const rewardRoleId = '1366569803275571210'; // Remplace par l'ID de ton rôle spécial
-
-if (newCount === rewardThreshold) {
-  try {
-    const member = await message.guild.members.fetch(userId);
-    await member.roles.add(rewardRoleId);
-    await message.channel.send({
-      content: `🎉 Félicitations <@${userId}> ! Tu as atteint ${rewardThreshold} pubs et gagné un rôle spécial !`
-    });
-  } catch (error) {
-    console.error('Erreur en attribuant le rôle de récompense:', error);
-  }
-}
-
-loadPubStats();
-
-// Sauvegarder les stats toutes les 5 minutes
+// Sauvegarde régulière des stats
 setInterval(() => {
   savePubStats();
 }, 5 * 60 * 1000);
 
-
-
-// Envoyer le nouveau message
-const sent = await message.reply({ embeds: [pubEmbed], allowedMentions: { repliedUser: false } });
-
-// Stocker le nouvel ID
-lastPubBotMessages.set(message.channelId, sent.id);
-
-    } catch (error) {
-      console.error('Erreur lors de la réponse dans un salon de pub:', error);
-    }
-    return;
-  }
 
   // --- Commande !server, !serveur ou !pineapple ---
   if (content === '!server' || content === '!serveur' || content === '!pineapple') {
