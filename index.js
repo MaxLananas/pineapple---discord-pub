@@ -1229,7 +1229,8 @@ client.on(Events.MessageCreate, async (message) => {
 
   const content = message.content.toLowerCase();
 
-  // --- Réponse automatique dans les salons de pub ---
+  // La partie de réponse automatique est maintenant commentée (désactivée)
+  /*
   if (pubChannels.includes(message.channelId)) {
     try {
       const pubEmbed = new EmbedBuilder()
@@ -1248,63 +1249,46 @@ Merci pour ta publication <@${message.author.id}>!
         `)
         .setFooter({ text: 'Merci de partager notre serveur pour plus de visibilité!' });
       
-      // Supprimer le dernier message du bot dans ce salon, s’il existe
-const lastMessageId = lastPubBotMessages.get(message.channelId);
-if (lastMessageId) {
-  try {
-    const oldMessage = await message.channel.messages.fetch(lastMessageId);
-    if (oldMessage && oldMessage.deletable) {
-      await oldMessage.delete();
-    }
-  } catch (err) {
-    console.warn('Impossible de supprimer l’ancien message de pub :', err.message);
-  }
-}
-
-// Incrémenter les stats de pub
-const userId = message.author.id;
-const currentCount = pubStats.get(userId) || 0;
-const newCount = currentCount + 1;
-pubStats.set(userId, newCount);
-savePubStats();
-
-
-// Vérifier si l'utilisateur atteint un palier pour récompense
-const rewardThreshold = 50; // Exemple : 10 pubs pour avoir un rôle
-const rewardRoleId = '1366569803275571210'; // Remplace par l'ID de ton rôle spécial
-
-if (newCount === rewardThreshold) {
-  try {
-    const member = await message.guild.members.fetch(userId);
-    await member.roles.add(rewardRoleId);
-    await message.channel.send({
-      content: `🎉 Félicitations <@${userId}> ! Tu as atteint ${rewardThreshold} pubs et gagné un rôle spécial !`
-    });
-  } catch (error) {
-    console.error('Erreur en attribuant le rôle de récompense:', error);
-  }
-}
-
-loadPubStats();
-
-// Sauvegarder les stats toutes les 5 minutes
-setInterval(() => {
-  savePubStats();
-}, 5 * 60 * 1000);
-
-
-
-// Envoyer le nouveau message
-const sent = await message.reply({ embeds: [pubEmbed], allowedMentions: { repliedUser: false } });
-
-// Stocker le nouvel ID
-lastPubBotMessages.set(message.channelId, sent.id);
-
+      // Code pour envoyer le message ici
     } catch (error) {
-      console.error('Erreur lors de la réponse dans un salon de pub:', error);
+      console.error("Erreur dans la réponse auto:", error);
     }
-    return;
   }
+  client.on(Events.MessageCreate, async (message) => {
+  if (message.author.bot) return;
+
+  const content = message.content.toLowerCase();
+
+  // La partie de réponse automatique est maintenant commentée (désactivée)
+  /*
+  if (pubChannels.includes(message.channelId)) {
+    try {
+      const pubEmbed = new EmbedBuilder()
+        .setColor('#FFC83D')
+        .setTitle('🍍 Pineapple - Serveur Pub')
+        .setDescription(`
+Merci pour ta publication <@${message.author.id}>!
+
+**Rejoins notre communauté de promotion Discord:**
+• Publie ton serveur dans les salons appropriés
+• Trouve des partenaires pour ton projet
+• Développe ta visibilité rapidement
+
+📌 Consulte nos règles: <${rulesChannelUrl}>
+🔗 Invite tes amis: ${inviteLink}
+        `)
+        .setFooter({ text: 'Merci de partager notre serveur pour plus de visibilité!' });
+      
+      // Code pour envoyer le message ici
+    } catch (error) {
+      console.error("Erreur dans la réponse auto:", error);
+    }
+  }
+  */
+  
+  // Le reste de ton code continue ici
+});
+  */
 
   // --- Commande !server, !serveur ou !pineapple ---
   if (content === '!server' || content === '!serveur' || content === '!pineapple') {
