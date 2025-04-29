@@ -17,7 +17,7 @@ jobs:
           node-version: '18'
           
       - name: Install dependencies
-        run: npm install discord.js express axios
+        run: npm install discord.js express axios sqlite3
         
       - name: Run bot
         run: node index.js
