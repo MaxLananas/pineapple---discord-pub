@@ -1206,9 +1206,6 @@ Profite bien de ton expérience parmi nous !
   }
 });
 
-// Stockage pour les derniers messages de pub envoyés par le bot
-const lastPubBotMessages = new Map();
-
 // --- GESTION DES PUBLICATIONS DANS LES SALONS DE PUB ---
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
