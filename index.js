@@ -1229,9 +1229,10 @@ client.on(Events.MessageCreate, async (message) => {
 
   const content = message.content.toLowerCase();
 
-  // La partie de réponse automatique est maintenant commentée (désactivée)
-  /*
-  if (pubChannels.includes(message.channelId)) {
+  // Désactivation de la fonctionnalité avec une variable
+  const pubResponseEnabled = false; // Mettre à true pour réactiver
+  
+  if (pubResponseEnabled && pubChannels.includes(message.channelId)) {
     try {
       const pubEmbed = new EmbedBuilder()
         .setColor('#FFC83D')
@@ -1254,13 +1255,14 @@ Merci pour ta publication <@${message.author.id}>!
       console.error("Erreur dans la réponse auto:", error);
     }
   }
+  
+  // Le reste de ton code continue ici
+});
   client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
   const content = message.content.toLowerCase();
 
-  // La partie de réponse automatique est maintenant commentée (désactivée)
-  /*
   if (pubChannels.includes(message.channelId)) {
     try {
       const pubEmbed = new EmbedBuilder()
@@ -1284,11 +1286,8 @@ Merci pour ta publication <@${message.author.id}>!
       console.error("Erreur dans la réponse auto:", error);
     }
   }
-  */
   
-  // Le reste de ton code continue ici
 });
-  */
 
   // --- Commande !server, !serveur ou !pineapple ---
   if (content === '!server' || content === '!serveur' || content === '!pineapple') {
