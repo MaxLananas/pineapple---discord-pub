@@ -1297,11 +1297,13 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 
-  // --- Commande !server, !serveur ou !pineapple ---
+  client.on('messageCreate', async (message) => { // AJOUTE async ICI
+  const content = message.content.toLowerCase();
+
   if (content === '!server' || content === '!serveur' || content === '!pineapple') {
     try {
       const guild = message.guild;
-      const owner = await guild.fetchOwner();
+      const owner = await guild.fetchOwner(); // MAINTENANT await est autorisé
       const serverEmbed = new EmbedBuilder()
         .setColor('#FFC83D')
         .setTitle(`📊 Informations sur ${guild.name}`)
