@@ -1218,15 +1218,8 @@ client.on(Events.MessageCreate, async (message) => {
         .setColor('#FFC83D')
         .setTitle('🍍 Pineapple - Serveur Pub')
         .setDescription(`
-Merci pour ta publication <@${message.author.id}> !
-
-🔗 **Rejoins notre communauté de promotion :**
-• Publie ton serveur dans les salons appropriés
-• Trouve des partenaires
-• Développe ta visibilité
-
-📜 **Consulte nos règles :** <${rulesChannelUrl}>
-🚀 **Invite tes amis :** ${inviteLink}
+• Merci pour ta publication <@${message.author.id}> !
+• 🚀 **Invite tes amis :** ${inviteLink}
         `)
         .setFooter({ text: 'Merci de soutenir notre serveur !' });
 
